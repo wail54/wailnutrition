@@ -58,17 +58,18 @@ export default function TrainingPage() {
       <div className="px-4 pb-6 space-y-4">
 
         {/* Quick nav */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {[
-            { href: '/training/calendar', icon: Calendar, label: 'Calendrier', color: '#3b82f6', bg: 'rgba(59,130,246,0.1)' },
-            { href: '/training/exercises', icon: Dumbbell, label: 'Exercices', color: '#22c55e', bg: 'rgba(34,197,94,0.1)' },
-            { href: '/training/records', icon: Trophy, label: 'Records', color: '#eab308', bg: 'rgba(234,179,8,0.1)' },
+            { href: '/training/new', icon: Plus, label: 'Séance', color: '#a855f7', bg: 'rgba(168,85,247,0.12)' },
+            { href: '/training/calendar', icon: Calendar, label: 'Calendrier', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+            { href: '/training/exercises', icon: Dumbbell, label: 'Exercices', color: '#22c55e', bg: 'rgba(34,197,94,0.12)' },
+            { href: '/training/records', icon: Trophy, label: 'Records', color: '#eab308', bg: 'rgba(234,179,8,0.12)' },
           ].map(({ href, icon: Icon, label, color, bg }) => (
             <Link key={href} href={href}
-              className="flex flex-col items-center gap-2 py-4 rounded-2xl border border-border active:scale-95 transition-transform"
+              className="flex flex-col items-center gap-2 py-3 rounded-2xl border border-border active:scale-95 transition-transform"
               style={{ backgroundColor: bg }}>
-              <Icon size={20} style={{ color }} />
-              <span className="text-xs font-semibold text-text-secondary">{label}</span>
+              <Icon size={18} style={{ color }} />
+              <span className="text-[10px] font-semibold text-text-secondary leading-tight text-center">{label}</span>
             </Link>
           ))}
         </div>
