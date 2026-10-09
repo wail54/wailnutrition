@@ -22,15 +22,16 @@ export default function HomePage() {
   useEffect(() => {
     async function load() {
       try {
-        const [s, rawSettings, str, sessions] = await Promise.all([
+        const [s, str, sessions] = await Promise.all([
           getDailyNutritionSummary(getTodayDate()),
-          getUserSettings(),
           getStreak(),
           getWorkoutSessions(3),
         ])
-        const settings = rawSettings as { daily_calorie_goal: number }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const rawSettings = await getUserSettings() as any
+        const calorieGoal: number = rawSettings?.daily_calorie_goal ?? 1800
         setSummary(s)
-        setGoal(settings.daily_calorie_goal)
+        setGoal(calorieGoal)
         setStreak(str)
         setRecentSessions(sessions)
       } catch (e) { console.error(e) }

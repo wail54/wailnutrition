@@ -22,15 +22,16 @@ export default function NutritionPage() {
   async function load(date: string) {
     setLoading(true)
     try {
-      const [l, s, rawSettings] = await Promise.all([
+      const [l, s] = await Promise.all([
         getMealLogsByDate(date),
         getDailyNutritionSummary(date),
-        getUserSettings(),
       ])
-      const settings = rawSettings as { daily_calorie_goal: number }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rawSettings = await getUserSettings() as any
+      const calorieGoal: number = rawSettings?.daily_calorie_goal ?? 1800
       setLogs(l)
       setSummary(s)
-      setGoal(settings.daily_calorie_goal)
+      setGoal(calorieGoal)
     } catch { toast.error('Erreur de chargement') }
     finally { setLoading(false) }
   }
