@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Utensils, Dumbbell, Calendar, BookOpen } from 'lucide-react'
+import { Home, Utensils, Dumbbell, Scale, BookOpen } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/', label: 'Accueil', icon: Home },
   { href: '/nutrition', label: 'Nutrition', icon: Utensils },
   { href: '/training', label: 'Training', icon: Dumbbell },
-  { href: '/training/calendar', label: 'Calendrier', icon: Calendar },
+  { href: '/weight', label: 'Poids', icon: Scale },
   { href: '/training/exercises', label: 'Exercices', icon: BookOpen },
 ]
 
@@ -18,15 +18,11 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto">
-      {/* Frosted glass bar */}
       <div className="relative bg-bg-secondary/80 backdrop-blur-2xl border-t border-white/5">
-        {/* Top highlight line */}
         <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
         <div className="flex items-center justify-around px-1 py-2 pb-safe">
           {navItems.map(({ href, label, icon: Icon }) => {
             const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
-
             return (
               <Link
                 key={href}
@@ -36,10 +32,7 @@ export function BottomNav() {
                   isActive ? 'text-white' : 'text-text-muted'
                 )}
               >
-                <div className={cn(
-                  'relative p-2 rounded-xl transition-all duration-200',
-                  isActive && 'bg-accent-green/15'
-                )}>
+                <div className={cn('relative p-2 rounded-xl transition-all duration-200', isActive && 'bg-accent-green/15')}>
                   {isActive && (
                     <div className="absolute inset-0 rounded-xl blur-sm opacity-60"
                       style={{ background: 'rgba(34,197,94,0.3)' }} />
@@ -50,10 +43,7 @@ export function BottomNav() {
                     className={cn('relative z-10', isActive ? 'text-accent-green' : 'text-text-muted')}
                   />
                 </div>
-                <span className={cn(
-                  'text-[10px] font-medium leading-none transition-all',
-                  isActive ? 'text-accent-green' : 'text-text-muted'
-                )}>
+                <span className={cn('text-[10px] font-medium leading-none transition-all', isActive ? 'text-accent-green' : 'text-text-muted')}>
                   {label}
                 </span>
               </Link>
