@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getMealLogsByDate, getDailyNutritionSummary, deleteMealLog, getUserSettings } from '@/lib/api/nutrition'
+import { getMealLogsByDate, getDailyNutritionSummary, deleteMealLog } from '@/lib/api/nutrition'
+import { supabase } from '@/lib/supabase/client'
 import { getTodayDate, getMealTimeLabel, getMealTimeIcon } from '@/lib/utils'
 import { CalorieGauge } from '@/components/nutrition/CalorieGauge'
 import { MacroRing } from '@/components/nutrition/MacroRing'
@@ -26,14 +27,21 @@ export default function NutritionPage() {
         getMealLogsByDate(date),
         getDailyNutritionSummary(date),
       ])
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const rawSettings = await getUserSettings() as any
-      const calorieGoal: number = rawSettings?.daily_calorie_goal ?? 1800
       setLogs(l)
       setSummary(s)
-      setGoal(calorieGoal)
-    } catch { toast.error('Erreur de chargement') }
-    finally { setLoading(false) }
+
+      // Fetch settings separately to avoid TypeScript tuple inference issues
+      const { data } = await supabase
+        .from('user_settings')
+        .select('daily_calorie_goal')
+        .eq('user_id', 'default')
+        .single()
+      if (data) setGoal(data.daily_calorie_goal as number)
+    } catch {
+      toast.error('Erreur de chargement')
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => { load(selectedDate) }, [selectedDate])
@@ -64,7 +72,6 @@ export default function NutritionPage() {
 
   return (
     <div className="animate-fade-in">
-      {/* Header */}
       <div className="page-header">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-black">Nutrition</h1>
@@ -72,8 +79,6 @@ export default function NutritionPage() {
             <Settings size={18} className="text-text-secondary" />
           </Link>
         </div>
-
-        {/* Date nav */}
         <div className="flex items-center gap-2">
           <button onClick={goToPrev} className="p-2.5 rounded-xl bg-bg-secondary border border-border active:scale-95 transition-transform">
             <ChevronLeft size={16} className="text-text-secondary" />
@@ -90,29 +95,22 @@ export default function NutritionPage() {
       </div>
 
       <div className="px-4 py-4 space-y-4">
-
-        {/* Gauge */}
         <div className="card">
           <CalorieGauge current={summary.total_calories} goal={goal} loading={loading} />
         </div>
-
-        {/* Macros */}
         <div className="card">
           <MacroRing protein={summary.total_protein} carbs={summary.total_carbs} fat={summary.total_fat} loading={loading} />
         </div>
 
-        {/* Log button */}
         {isToday && (
           <Link href="/nutrition/log"
             className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl font-bold text-bg-primary"
             style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', boxShadow: '0 8px 24px rgba(34,197,94,0.3)' }}
           >
-            <Plus size={18} />
-            Enregistrer un repas
+            <Plus size={18} /> Enregistrer un repas
           </Link>
         )}
 
-        {/* Meals */}
         {loading ? (
           <div className="space-y-3">
             {[0, 1].map((i) => <div key={i} className="h-28 bg-bg-card animate-pulse rounded-2xl" />)}
@@ -133,7 +131,6 @@ export default function NutritionPage() {
               const mealKcal = grouped[mealType].reduce((s, l) => s + l.calories, 0)
               return (
                 <div key={mealType} className="card">
-                  {/* Meal header */}
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-2xl">{getMealTimeIcon(mealType)}</span>
                     <div className="flex-1">
@@ -145,13 +142,9 @@ export default function NutritionPage() {
                       <p className="text-[10px] text-text-muted">kcal</p>
                     </div>
                   </div>
-
-                  {/* Food items */}
                   <div className="space-y-1.5">
                     {grouped[mealType].map((log) => (
-                      <div key={log.id}
-                        className="flex items-center gap-3 px-3 py-2.5 bg-bg-secondary rounded-xl"
-                      >
+                      <div key={log.id} className="flex items-center gap-3 px-3 py-2.5 bg-bg-secondary rounded-xl">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-text-primary truncate">{log.food_name}</p>
                           <div className="flex gap-2 mt-0.5 flex-wrap">
@@ -162,8 +155,7 @@ export default function NutritionPage() {
                           </div>
                         </div>
                         <span className="text-sm font-bold text-accent-green shrink-0">{log.calories} kcal</span>
-                        <button onClick={() => handleDelete(log.id)}
-                          className="p-1.5 text-text-muted hover:text-accent-red transition-colors shrink-0">
+                        <button onClick={() => handleDelete(log.id)} className="p-1.5 text-text-muted hover:text-accent-red transition-colors shrink-0">
                           <Trash2 size={13} />
                         </button>
                       </div>

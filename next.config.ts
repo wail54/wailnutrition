@@ -1,2 +1,2 @@
-// This file is intentionally empty — configuration is in next.config.js
-export {}
+// next.config.ts — Ne pas utiliser ce fichier, la config est dans next.config.js
+// Ce fichier vide évite les conflits avec next.config.js

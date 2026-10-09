@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getDailyNutritionSummary, getStreak, getUserSettings } from '@/lib/api/nutrition'
+import { getDailyNutritionSummary, getStreak } from '@/lib/api/nutrition'
+import { supabase } from '@/lib/supabase/client'
 import { getWorkoutSessions } from '@/lib/api/workout'
 import { getTodayDate, formatDateFull } from '@/lib/utils'
 import { CalorieGauge } from '@/components/nutrition/CalorieGauge'
@@ -27,13 +28,16 @@ export default function HomePage() {
           getStreak(),
           getWorkoutSessions(3),
         ])
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const rawSettings = await getUserSettings() as any
-        const calorieGoal: number = rawSettings?.daily_calorie_goal ?? 1800
         setSummary(s)
-        setGoal(calorieGoal)
         setStreak(str)
         setRecentSessions(sessions)
+
+        const { data } = await supabase
+          .from('user_settings')
+          .select('daily_calorie_goal')
+          .eq('user_id', 'default')
+          .single()
+        if (data) setGoal(data.daily_calorie_goal as number)
       } catch (e) { console.error(e) }
       finally { setLoading(false) }
     }
