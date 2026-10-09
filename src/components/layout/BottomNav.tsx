@@ -18,34 +18,44 @@ export function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto">
-      <div className="bg-bg-secondary/95 backdrop-blur-xl border-t border-border">
-        <div className="flex items-center justify-around px-2 py-2 pb-safe">
+      {/* Frosted glass bar */}
+      <div className="relative bg-bg-secondary/80 backdrop-blur-2xl border-t border-white/5">
+        {/* Top highlight line */}
+        <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+        <div className="flex items-center justify-around px-1 py-2 pb-safe">
           {navItems.map(({ href, label, icon: Icon }) => {
-            const isActive =
-              href === '/' ? pathname === '/' : pathname.startsWith(href)
+            const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
+
             return (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-200 min-w-[56px]',
-                  isActive
-                    ? 'text-accent-green'
-                    : 'text-text-muted hover:text-text-secondary'
+                  'flex flex-col items-center gap-1 px-3 py-1.5 rounded-2xl transition-all duration-200 min-w-[56px]',
+                  isActive ? 'text-white' : 'text-text-muted'
                 )}
               >
-                <div
-                  className={cn(
-                    'p-1.5 rounded-xl transition-all duration-200',
-                    isActive && 'bg-accent-green/10 glow-green'
+                <div className={cn(
+                  'relative p-2 rounded-xl transition-all duration-200',
+                  isActive && 'bg-accent-green/15'
+                )}>
+                  {isActive && (
+                    <div className="absolute inset-0 rounded-xl blur-sm opacity-60"
+                      style={{ background: 'rgba(34,197,94,0.3)' }} />
                   )}
-                >
                   <Icon
                     size={20}
                     strokeWidth={isActive ? 2.5 : 1.5}
+                    className={cn('relative z-10', isActive ? 'text-accent-green' : 'text-text-muted')}
                   />
                 </div>
-                <span className="text-[10px] font-medium leading-none">{label}</span>
+                <span className={cn(
+                  'text-[10px] font-medium leading-none transition-all',
+                  isActive ? 'text-accent-green' : 'text-text-muted'
+                )}>
+                  {label}
+                </span>
               </Link>
             )
           })}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, use } from 'react'
+import { useEffect, useState } from 'react'
 import { getExerciseProgress } from '@/lib/api/workout'
 import { getExercises } from '@/lib/api/workout'
 import type { Exercise } from '@/lib/supabase/types'
@@ -20,11 +20,11 @@ import toast from 'react-hot-toast'
 import { getMuscleGroupLabel } from '@/lib/utils'
 
 interface PageProps {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 export default function ExerciseProgressPage({ params }: PageProps) {
-  const { id } = use(params)
+  const { id } = params
   const [exercise, setExercise] = useState<Exercise | null>(null)
   const [progress, setProgress] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
