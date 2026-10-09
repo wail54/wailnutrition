@@ -111,14 +111,23 @@ export async function getDailyNutritionSummary(date: string) {
 
 // ─── User Settings ────────────────────────────────────────────────────────────
 
-export async function getUserSettings() {
+export async function getUserSettings(): Promise<{
+  id: string
+  user_id: string
+  daily_calorie_goal: number
+  daily_protein_goal: number | null
+  daily_carbs_goal: number | null
+  daily_fat_goal: number | null
+  created_at: string
+  updated_at: string
+}> {
   const { data, error } = await supabase
     .from('user_settings')
     .select('*')
     .eq('user_id', 'default')
     .single()
   if (error) throw error
-  return data
+  return data as any
 }
 
 export async function updateUserSettings(settings: {
