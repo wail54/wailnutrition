@@ -22,11 +22,12 @@ export default function NutritionPage() {
   async function load(date: string) {
     setLoading(true)
     try {
-      const [l, s, settings] = await Promise.all([
+      const [l, s, rawSettings] = await Promise.all([
         getMealLogsByDate(date),
         getDailyNutritionSummary(date),
         getUserSettings(),
       ])
+      const settings = rawSettings as { daily_calorie_goal: number }
       setLogs(l)
       setSummary(s)
       setGoal(settings.daily_calorie_goal)

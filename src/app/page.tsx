@@ -22,12 +22,13 @@ export default function HomePage() {
   useEffect(() => {
     async function load() {
       try {
-        const [s, settings, str, sessions] = await Promise.all([
+        const [s, rawSettings, str, sessions] = await Promise.all([
           getDailyNutritionSummary(getTodayDate()),
           getUserSettings(),
           getStreak(),
           getWorkoutSessions(3),
         ])
+        const settings = rawSettings as { daily_calorie_goal: number }
         setSummary(s)
         setGoal(settings.daily_calorie_goal)
         setStreak(str)
