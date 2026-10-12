@@ -4,6 +4,9 @@ interface MacroRingProps {
   protein: number
   carbs: number
   fat: number
+  proteinGoal?: number
+  carbsGoal?: number
+  fatGoal?: number
   loading?: boolean
 }
 
@@ -13,9 +16,15 @@ const MACROS = [
   { key: 'fat' as const, label: 'Lipides', color: '#f97316', unit: 'g', emoji: '🔥', bg: 'rgba(249,115,22,0.1)' },
 ]
 
-export function MacroRing({ protein, carbs, fat, loading }: MacroRingProps) {
+const DEFAULT_GOALS = { protein: 150, carbs: 200, fat: 60 }
+
+export function MacroRing({ protein, carbs, fat, proteinGoal, carbsGoal, fatGoal, loading }: MacroRingProps) {
   const values = { protein, carbs, fat }
-  const totalKcal = protein * 4 + carbs * 4 + fat * 9
+  const goals = {
+    protein: proteinGoal ?? DEFAULT_GOALS.protein,
+    carbs: carbsGoal ?? DEFAULT_GOALS.carbs,
+    fat: fatGoal ?? DEFAULT_GOALS.fat,
+  }
 
   if (loading) {
     return (
@@ -31,8 +40,9 @@ export function MacroRing({ protein, carbs, fat, loading }: MacroRingProps) {
     <div className="grid grid-cols-3 gap-3">
       {MACROS.map(({ key, label, color, unit, emoji, bg }) => {
         const val = values[key]
-        const kcal = key === 'fat' ? val * 9 : val * 4
-        const pct = totalKcal > 0 ? Math.round((kcal / totalKcal) * 100) : 0
+        const goal = goals[key]
+        // Pourcentage de l'objectif journalier (plafonné à 100%)
+        const pct = goal > 0 ? Math.min(Math.round((val / goal) * 100), 100) : 0
 
         return (
           <div key={key}
@@ -48,10 +58,11 @@ export function MacroRing({ protein, carbs, fat, loading }: MacroRingProps) {
               <p className="text-xl font-black leading-none" style={{ color }}>
                 {val}<span className="text-xs font-normal text-text-muted ml-0.5">{unit}</span>
               </p>
-              <p className="text-[10px] text-text-muted mt-1">{label}</p>
+              <p className="text-[10px] text-text-muted mt-0.5">/ {goal}{unit}</p>
+              <p className="text-[10px] text-text-muted mt-0.5">{label}</p>
             </div>
 
-            {/* Mini progress bar */}
+            {/* Progress bar vs objectif */}
             <div className="w-full h-1 bg-black/20 rounded-full overflow-hidden relative z-10">
               <div className="h-full rounded-full transition-all duration-700"
                 style={{ width: `${pct}%`, backgroundColor: color, boxShadow: `0 0 6px ${color}80` }} />

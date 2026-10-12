@@ -16,6 +16,9 @@ import { fr } from 'date-fns/locale'
 export default function HomePage() {
   const [summary, setSummary] = useState({ total_calories: 0, total_protein: 0, total_carbs: 0, total_fat: 0 })
   const [goal, setGoal] = useState(1800)
+  const [proteinGoal, setProteinGoal] = useState(150)
+  const [carbsGoal, setCarbsGoal] = useState(200)
+  const [fatGoal, setFatGoal] = useState(60)
   const [streak, setStreak] = useState(0)
   const [recentSessions, setRecentSessions] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -34,10 +37,15 @@ export default function HomePage() {
 
         const { data } = await supabase
           .from('user_settings')
-          .select('daily_calorie_goal')
+          .select('daily_calorie_goal, daily_protein_goal, daily_carbs_goal, daily_fat_goal')
           .eq('user_id', 'default')
           .single()
-        if (data) setGoal(data.daily_calorie_goal as number)
+        if (data) {
+          setGoal(data.daily_calorie_goal as number)
+          if (data.daily_protein_goal) setProteinGoal(data.daily_protein_goal as number)
+          if (data.daily_carbs_goal) setCarbsGoal(data.daily_carbs_goal as number)
+          if (data.daily_fat_goal) setFatGoal(data.daily_fat_goal as number)
+        }
       } catch (e) { console.error(e) }
       finally { setLoading(false) }
     }
@@ -96,7 +104,7 @@ export default function HomePage() {
         {/* Macros */}
         <div className="card">
           <h2 className="font-bold text-text-primary mb-4">Macronutriments</h2>
-          <MacroRing protein={summary.total_protein} carbs={summary.total_carbs} fat={summary.total_fat} loading={loading} />
+          <MacroRing protein={summary.total_protein} carbs={summary.total_carbs} fat={summary.total_fat} proteinGoal={proteinGoal} carbsGoal={carbsGoal} fatGoal={fatGoal} loading={loading} />
         </div>
 
         {/* Quick actions */}
