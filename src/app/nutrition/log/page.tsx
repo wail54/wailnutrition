@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getFoods, logMeal, quickAddMeals } from '@/lib/api/nutrition'
 import type { Food, MealTime } from '@/lib/supabase/types'
@@ -23,6 +23,14 @@ Oeuf dur;100;155;13;1;11
 Poulet grillé;200;330;62;0;7.2`
 
 export default function LogMealPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="w-8 h-8 border-2 border-accent-green border-t-transparent rounded-full animate-spin" /></div>}>
+      <LogMealContent />
+    </Suspense>
+  )
+}
+
+function LogMealContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
